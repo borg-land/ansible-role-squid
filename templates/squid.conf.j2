@@ -69,3 +69,7 @@ acl {{ acl.name }} {{ acl.classifier }} {{ acl.value }}
 cache {{ rule.decision }} {{ rule.acl }}
 {% endfor %}
 {% endif %}
+
+
+logformat combinedjson { "clientip": "%>a", "ident": "%ui", "uname": "%un", "timestamp": "%{%FT%T%z}tg", "verb": "%rm", "request": "%ru", "httpversion": "HTTP/%rv", "response": %>Hs, "bytes": %<st, "referer": "%{Referer}>h", "agent": "%{User-Agent}>h", "request_status": "%Sh", "hierarchy_status": "%Sh" }
+access_log /var/log/squid/access_log.js combinedjson
