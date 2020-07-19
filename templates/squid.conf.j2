@@ -11,6 +11,8 @@ acl localnet src 172.16.0.0/12	# RFC1918 possible internal network
 acl localnet src 192.168.0.0/16	# RFC1918 possible internal network
 acl localnet src fc00::/7       # RFC 4193 local private network range
 acl localnet src fe80::/10      # RFC 4291 link-local (directly plugged) machines
+acl googlehc src 130.211.0.0/22 # https://cloud.google.com/load-balancing/docs/health-checks#fw-rule
+acl googlehc src 35.191.0.0/16  # https://cloud.google.com/load-balancing/docs/health-checks#fw-rule
 
 acl SSL_ports port 443
 acl Safe_ports port 80		# http
@@ -26,9 +28,6 @@ acl Safe_ports port 777		# multiling http
 acl CONNECT method CONNECT
 
 http_access deny !Safe_ports
-
-# Deny CONNECT to other than secure SSL ports
-http_access deny CONNECT !SSL_ports
 
 http_access allow localhost
 http_access deny
@@ -72,5 +71,6 @@ cache {{ rule.decision }} {{ rule.acl }}
 
 {% raw %}
 logformat combinedjson { "clientip": "%>a", "ident": "%ui", "uname": "%un", "timestamp": "%{%FT%T%z}tg", "verb": "%rm", "request": "%ru", "httpversion": "HTTP/%rv", "response": %>Hs, "bytes": %<st, "referer": "%{Referer}>h", "agent": "%{User-Agent}>h", "request_status": "%Sh", "hierarchy_status": "%Sh" }
-access_log /var/log/squid/access_log.js combinedjson
+access_log none googlehc
+access_log /var/log/squid/access_log.js combinedjson !googlehc
 {% endraw %}
